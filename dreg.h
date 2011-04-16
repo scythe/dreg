@@ -1,4 +1,5 @@
 /*dreg functions and accessories */
+#include "charset.h"
 
 enum TYPES {
 	COMPL,
@@ -33,7 +34,7 @@ typedef struct dfastate_list {
 } dfalist;
 
 typedef struct capture_list {
-	char *capture
+	char *capture;
 	int len;
 	struct capture_list *next;
 } caplist;
@@ -83,7 +84,7 @@ regex *deriv(regex *reg, char a, charset *s);
  * list is taken as "less than", all other things being equal. Regexen representing exact strings are
  * compared lexicographically with strcmp().
  */
-int compare(regex *r, regex *s); /* -1 if r < s, 1 if r > s, 0 if r == s */
+int regcompare(regex *r, regex *s); /* -1 if r < s, 1 if r > s, 0 if r == s */
 
 /* Frees the regex r and all of its components. Causes UNDEFINED BEHAVIOR if 
  * any of r's components are still in-use.
