@@ -3,46 +3,32 @@
 #include <stdlib.h>
 
 int regcompare(regex *r, regex *s) {
-
-	int ind, rs, ss;
+	int ind, ret;
 	
-	rs = !r->operands + !r->type;
-	ss = !s->operands + !s->type;
-	if(ss - rs)
-		return ss - rs;
-	switch(rs) {
-		case 1:
-			return strcmp(r->type, s->type);
-		case 2:
+	if(ret = r->type - s->type)
+		return ret;
+
+	switch(r->type) {
+		case STRING:
+			if(ret = strcmp(r->string, s->string))
+				return ret;
+		case MAGIC:
 			return r->capture - s->capture;
 	}
 
-	if(*r->type - *s->type)
-		return *r->type - *s->type;
+	for(ind = 0; r->operands[ind] && s->operands[ind]; ++ind)
+		if(ret = regcompare(r->operands[ind], s->operands[ind]))
+			return ret;
 
-	for(ind = 0; r->operands[ind] || s->operands[ind]; ++ind) {
-		if(!r->operands[ind])
-			return -1;
-		if(!s->operands[ind])
-			return 1;
-		
-		rs = regcompare(r->operands[ind], s->operands[ind]);
-		if(rs)
-			return rs;
-	}
-	return 0;
+	return (!s->operands[ind] - !r->operands[ind])<<1 + r->capture - s->capture;
 }
 
 int nullable(regex *r) {
 	int ind, k = 1;
-	if(!r->type)
-		return r->capture;
-	if(!r->operands)
-		return 0;
-	
-	switch(*r->type) {
+
+	switch(r->type) {
 		case COMPL:
-			return !nullable(r->operands[1]);
+			return !nullable(r->operands[0]);
 		case KLEENE:
 			return 1;
 		case OR:
@@ -53,11 +39,21 @@ int nullable(regex *r) {
 				if(nullable(r->operands[ind]) - k)
 					return !k;
 			return k;
+		case STRING:
+			return !r->string;
+		case MAGIC:
+			return r->capture;
 	}
 	exit(1);
 }
 
-
+dfalist *dfalist_add(dfalist *list, dfastate *state) {
+	dfalist *new = malloc(sizeof(dfalist));
+	new->state = state;
+	new->next = list->next;
+	list->next = new;
+	return new;
+}
 
 
 

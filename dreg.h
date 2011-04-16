@@ -6,19 +6,21 @@ enum TYPES {
 	KLEENE,
 	OR,
 	AND,
-	CONCAT
+	CONCAT,
+	STRING,
+	MAGIC
 };
 
 /* Represents a regular expression. The type specifies an operator from enum TYPES
- * which is carried out on the array of regexen operands. If operands is null, type
- * is a string, and the regex matches only that exact string. If type is also null,
- * the regex is an always-match if capture is 1 and a never-match if capture is 0. 
- * The types COMPL and KLEENE constrain operands to be of length 1; other types allow
- * operands to be of any length.
+ * which is carried out on the array of regexen operands. Type STRING has null operands
+ * and represents the char *string; type MAGIC is the empty set if capture is 0 and an
+ * always-match if capture is 1. The types COMPL and KLEENE constrain operands 
+ * to be of length 1; other types allow operands to be of any length.
  */
 typedef struct regular_expression {
-	char *type;
+	char type;
 	struct regular_expression **operands; /* this array must be null-terminated! */
+	char *string;
 	char capture;
 } regex;
 
