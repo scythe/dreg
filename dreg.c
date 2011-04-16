@@ -1,26 +1,22 @@
 #include "dreg.h"
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
 
 int regcompare(regex *r, regex *s) {
 	int ind, ret;
 	
-	if(ret = r->type - s->type)
+	if((ret = r->type - s->type))
 		return ret;
 
-	switch(r->type) {
-		case STRING:
-			if(ret = strcmp(r->string, s->string))
-				return ret;
-		case MAGIC:
-			return r->capture - s->capture;
-	}
+	if(r->type == SET)
+		return strcmp((char *) r->set->parts, (char *) s->set->parts);
 
 	for(ind = 0; r->operands[ind] && s->operands[ind]; ++ind)
-		if(ret = regcompare(r->operands[ind], s->operands[ind]))
+		if((ret = regcompare(r->operands[ind], s->operands[ind])))
 			return ret;
 
-	return (!s->operands[ind] - !r->operands[ind])<<1 + r->capture - s->capture;
+	return ((!s->operands[ind] - !r->operands[ind])<<1) + r->capture - s->capture;
 }
 
 int nullable(regex *r) {
@@ -39,10 +35,8 @@ int nullable(regex *r) {
 				if(nullable(r->operands[ind]) - k)
 					return !k;
 			return k;
-		case STRING:
-			return !r->string;
-		case MAGIC:
-			return r->capture;
+		case SET:
+			return 0;
 	}
 	exit(1);
 }
@@ -54,6 +48,21 @@ dfalist *dfalist_add(dfalist *list, dfastate *state) {
 	list->next = new;
 	return new;
 }
+/*
+regex *storeg(char *sreg, int len) {
+	int ind, op;
+	char escape = '\\';
+	char *opers = "|&*!"
+	regex *result = malloc(sizeof(regex));
+	for op
+	for(ind = 0; ind < len; ++ind) {
+		if(sreg[ind] == escape) {
+			++ind;
+			continue;
+		}
+		if(sreg[ind] == or
+*/
+
 
 
 

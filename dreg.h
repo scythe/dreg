@@ -7,8 +7,7 @@ enum TYPES {
 	OR,
 	AND,
 	CONCAT,
-	STRING,
-	MAGIC
+	SET
 };
 
 /* Represents a regular expression. The type specifies an operator from enum TYPES
@@ -20,7 +19,7 @@ enum TYPES {
 typedef struct regular_expression {
 	char type;
 	struct regular_expression **operands; /* this array must be null-terminated! */
-	char *string;
+	charset *set;
 	char capture;
 } regex;
 
@@ -60,7 +59,7 @@ regex *reduce(regex *reg);
  * (...) defines a capture subexpression, r* is the Kleene star, r|s is r or s, 
  * r&s is r and s, r? is r|e, r+ is rr*.
  */
-regex *storeg(char *sreg);
+regex *storeg(char *sreg, int len);
 
 /* Attempts to match the regex in the DFA d against the string a.
  * Any captures are recorded in the capture list. Works recursively:
