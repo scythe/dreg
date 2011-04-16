@@ -4,42 +4,57 @@
 
 int regcompare(regex *r, regex *s) {
 
-	int ind, ret;
+	int ind, rs, ss;
 	
-	if(!r || !s)
-		exit(1);
-	
-	if(!r->operands && r->type) {
-		if(!s->operands && s->type)
+	rs = !r->operands + !r->type;
+	ss = !s->operands + !s->type;
+	if(ss - rs)
+		return ss - rs;
+	switch(rs) {
+		case 1:
 			return strcmp(r->type, s->type);
-		else if (!s->type)
-			return 1;
-		else
-			return -1;
-	}
-	if(!r->type) {
-		if(s->type)
-			return -1;
-		else
+		case 2:
 			return r->capture - s->capture;
 	}
-	if(!s->operands)
-		return 1;
+
 	if(*r->type - *s->type)
 		return *r->type - *s->type;
 
-	/* At this point, we know r and s are of the same type.*/
 	for(ind = 0; r->operands[ind] || s->operands[ind]; ++ind) {
 		if(!r->operands[ind])
 			return -1;
 		if(!s->operands[ind])
 			return 1;
 		
-		ret = regcompare(r->operands[ind], s->operands[ind]);
-		if(ret)
-			return ret;
+		rs = regcompare(r->operands[ind], s->operands[ind]);
+		if(rs)
+			return rs;
 	}
 	return 0;
+}
+
+int nullable(regex *r) {
+	int ind, k = 1;
+	if(!r->type)
+		return r->capture;
+	if(!r->operands)
+		return 0;
+	
+	switch(*r->type) {
+		case COMPL:
+			return !nullable(r->operands[1]);
+		case KLEENE:
+			return 1;
+		case OR:
+			k = 0;
+		case AND:
+		case CONCAT:
+			for(ind = 0; r->operands[ind]; ++ind)
+				if(nullable(r->operands[ind]) - k)
+					return !k;
+			return k;
+	}
+	exit(1);
 }
 
 
