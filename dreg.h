@@ -25,7 +25,7 @@ typedef struct regular_expression {
 
 typedef struct automaton_state {
 	regex *value;
-	charset *dclasses;
+	charset **dclasses;
 	struct automaton_state **results;
 } dfastate;
 
@@ -58,6 +58,8 @@ regex *reduce(regex *reg);
  * character within the brackets, [^...] matches anything not within the brackets,
  * (...) defines a capture subexpression, r* is the Kleene star, r|s is r or s, 
  * r&s is r and s, r? is r|e, r+ is rr*.
+ * Probably going to be implemented in a separate library. On hold for now.
+ * Probably going to use some sort of stack.
  */
 regex *storeg(char *sreg, int len);
 
