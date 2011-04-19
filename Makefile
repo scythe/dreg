@@ -11,3 +11,8 @@ clean:
 
 test:
 	cc -Os -Wall -ansi -pedantic -o chartest.o -lm -lcharset chartests.c
+
+push:
+	git add *.c *.h Makefile
+	git commit 
+	git push -u origin master

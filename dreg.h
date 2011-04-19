@@ -11,16 +11,16 @@ enum TYPES {
 };
 
 /* Represents a regular expression. The type specifies an operator from enum TYPES
- * which is carried out on the array of regexen operands. Type STRING has null operands
- * and represents the char *string; type MAGIC is the empty set if capture is 0 and an
- * always-match if capture is 1. The types COMPL and KLEENE constrain operands 
- * to be of length 1; other types allow operands to be of any length.
+ * which is carried out on the array of regexen operands. Type SET has null operands
+ * and represents the set *set; oplen specifies the number of operands. The types 
+ * COMPL and KLEENE can have only one operand; other types can have any amount. 
  */
 typedef struct regular_expression {
 	char type;
 	struct regular_expression **operands; /* this array must be null-terminated! */
 	charset *set;
 	char capture;
+	int oplen;
 } regex;
 
 typedef struct automaton_state {
@@ -58,7 +58,7 @@ regex *reduce(regex *reg);
  * character within the brackets, [^...] matches anything not within the brackets,
  * (...) defines a capture subexpression, r* is the Kleene star, r|s is r or s, 
  * r&s is r and s, r? is r|e, r+ is rr*.
- * Probably going to be implemented in a separate library. On hold for now.
+ * Probably going to be implemented in a separate file. On hold for now.
  * Probably going to use some sort of stack.
  */
 regex *storeg(char *sreg, int len);
@@ -99,3 +99,8 @@ int regfree(regex *r);
  * nu(r&s) = nu(rs) = nu(r) && nu(s), nu(string) = 0.
  */
 int nullable(regex *r);
+
+/* Creates a regex and fills its fields with the parameters specified. The operands
+ * array is NOT allocated.
+ */
+regex *newreg(char type, regex **operands, charset *set, char capture, int oplen);

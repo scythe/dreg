@@ -34,3 +34,5 @@ charset cscompl(charset a);
 
 /*1 if a contains c; 0 if a does not contain c*/
 int contains(charset a, uint32_t c);
+
+charset *newcharset(uint32_t *parts);
