@@ -10,7 +10,7 @@ clean:
 	rm *.o *.so
 
 test:
-	cc -Os -Wall -ansi -pedantic -o chartest.o -lm -lcharset chartests.c
+	cc -Os -Wall -ansi -pedantic -o chartest.o -L./ -R./ -lm -lcharset chartests.c
 
 push:
 	git add *.c *.h Makefile README
