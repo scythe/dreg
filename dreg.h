@@ -52,6 +52,13 @@ dfalist *dfalist_add(dfalist *list, dfastate *state);
  */
 regex *reduce(regex *reg);
 
+/* Flattens a tree of regexen operands where the leaves of the tree are taken
+ * to be any regexen operands such that their type is not that specified, and
+ * all regexen of the type specified are nodes whose operands are taken as
+ * leaves in the final collapsed array. Returns final length in *len.
+ */
+regex **collapse(regex **operands, char type, int oplen, int *len);
+
 /* Converts a string representing a regex to a regex struct.
  * Uses POSIX Extended Regular Expressions syntax and meta-characters:
  * "." matches any character, INCLUDING the line feed \n, [...] matches any
@@ -87,7 +94,7 @@ regex *deriv(regex *reg, char a, charset *s);
  * list is taken as "less than", all other things being equal. Regexen representing exact strings are
  * compared lexicographically with strcmp().
  */
-int regcompare(regex *r, regex *s); /* -1 if r < s, 1 if r > s, 0 if r == s */
+int regcompare(const void *r, const void *s); /* -1 if r < s, 1 if r > s, 0 if r == s */
 
 /* Frees the regex r and all of its components. Causes UNDEFINED BEHAVIOR if 
  * any of r's components are still in-use.

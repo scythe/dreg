@@ -10,20 +10,24 @@ static regex empty_set_regex = {SET, NULL, &empty_charset, 0, 0};
 static regex *empty_string_operands[1] = {&empty_set_regex};
 static regex empty_string_regex = {KLEENE, empty_string_operands, NULL, 0, 1};
 
-int regcompare(regex *r, regex *s) {
+int regcompare(const void *r, const void *s) {
 	int ind, ret;
-	
-	if((ret = r->type - s->type))
+	const regex *rr = (regex *) r, *ss = (regex *) s;
+
+	if((ret = rr->type - ss->type))
 		return ret;
 
-	if(r->type == SET)
-		return strcmp((char *) r->set->parts, (char *) s->set->parts);
+	if(r == s)
+		return ret; /* ret = 0 here always */
 
-	for(ind = 0; ind < r->oplen && ind < s->oplen; ++ind)
-		if((ret = regcompare(r->operands[ind], s->operands[ind])))
+	if(rr->type == SET)
+		return strcmp((char *) rr->set->parts, (char *) ss->set->parts);
+
+	for(ind = 0; ind < rr->oplen && ind < ss->oplen; ++ind)
+		if((ret = regcompare(rr->operands[ind], ss->operands[ind])))
 			return ret;
 
-	return (r->oplen > s->oplen ? 2 : -2) + r->capture - s->capture;
+	return (rr->oplen > ss->oplen ? 2 : -2) + rr->capture - ss->capture;
 }
 
 int nullable(regex *r) {
@@ -160,21 +164,32 @@ regex *deriv(regex *r, char a, charset *s) {
 
 regex *reduce(regex *r) {
 	/*int ind;*/
-	regex *res;
+	int len;
+	regex *res, **newops;
 
 	switch(r->type) {
 		case COMPL:
 			if(r->operands[0]->type == COMPL) 
 				return reduce(r->operands[0]->operands[0]);
+
 			res = newreg(COMPL, malloc(sizeof(regex *)), NULL, r->capture, 1);
 			res->operands[0] = reduce(r->operands[0]);
 			return res;
 		case KLEENE:
 			if(r->operands[0]->type == KLEENE)
 				return reduce(r->operands[0]);
+
 			res = newreg(KLEENE, malloc(sizeof(regex *)), NULL, r->capture, 1);
 			res->operands[0] = reduce(r->operands[0]);
 			return res;
+		case OR:
+		case AND:
+			newops = collapse(r->operands, r->type, r->oplen, &len);
+			qsort(newops, len, sizeof(regex *), &regcompare);
+
+		case CONCAT:
+			newops = collapse(r->operands, r->type, r->oplen, &len);
+			
 		default:
 			return NULL; /*fix me!*/
 	}
