@@ -215,6 +215,7 @@ regex **collapse(regex **operands, char type, int len, int *total) {
 	
 	if(*total == -1) { /* nothing to collapse */
 		free(subtrees);
+		free(sublens);
 		*total = len;
 		return operands;
 	}
