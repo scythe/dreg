@@ -203,11 +203,12 @@ regex **collapse(regex **operands, char type, int len, int *total) {
 	*total = -1;
 	
 	for(ind = 0; ind < len; ++ind) {
-		*sublens[ind] = 0;
+		sublens[ind] = NULL;
 		if(operands[ind]->type == type) {
 			if(*total == -1)
 				*total = len;
 			
+			sublens[ind] = malloc(sizeof(int));
 			subtrees[ind] = collapse(operands[ind]->operands, type, operands[ind]->oplen, sublens[ind]);
 			*total = *total + *sublens[ind] - 1;
 		} 
@@ -224,10 +225,11 @@ regex **collapse(regex **operands, char type, int len, int *total) {
 	offset = 0;
 	
 	for(ind = 0; ind < len; ++ind) {
-		if(*sublens[ind]) {
+		if(sublens[ind]) {
 			memcpy((void *) &(ret[offset + ind]), (void *) subtrees[ind], sizeof(regex *) * *sublens[ind]);
 			offset += *sublens[ind] - 1;
 			free(subtrees[ind]);
+			free(sublens[ind]);
 		}
 		else
 			ret[offset + ind] = operands[ind];
