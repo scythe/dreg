@@ -195,7 +195,45 @@ regex *reduce(regex *r) {
 	}
 }
 
-
-
-
-
+regex **collapse(regex **operands, char type, int len, int *total) {
+	int ind, offset;
+	regex ***subtrees = malloc(sizeof(regex **) * len);
+	int **sublens = malloc(sizeof(int *) * len);
+	regex **ret;
+	*total = -1;
+	
+	for(ind = 0; ind < len; ++ind) {
+		*sublens[ind] = 0;
+		if(operands[ind]->type == type) {
+			if(*total == -1)
+				*total = len;
+			
+			subtrees[ind] = collapse(operands[ind]->operands, type, operands[ind]->oplen, sublens[ind]);
+			*total = *total + *sublens[ind] - 1;
+		} 
+	}
+	
+	if(*total == -1) { /* nothing to collapse */
+		free(subtrees);
+		*total = len;
+		return operands;
+	}
+	
+	ret = malloc(sizeof(regex *) * *total);
+	offset = 0;
+	
+	for(ind = 0; ind < len; ++ind) {
+		if(*sublens[ind]) {
+			memcpy((void *) &(ret[offset + ind]), (void *) subtrees[ind], sizeof(regex *) * *sublens[ind]);
+			offset += *sublens[ind] - 1;
+			free(subtrees[ind]);
+		}
+		else
+			ret[offset + ind] = operands[ind];
+	}
+	
+	free(sublens);
+	free(subtrees);
+	
+	return ret;
+}
