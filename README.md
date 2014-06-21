@@ -1,6 +1,6 @@
 # dreg - regular expression derivative-based pattern matcher
 
-	dreg is currently in the very early stage of development. The aim is simply to make
+dreg is currently in the very early stage of development. The aim is simply to make
 the smallest efficient regex matcher possible. Code is approximately documented in header files.
 
 # whatever happened to this repo?
