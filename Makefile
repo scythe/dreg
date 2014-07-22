@@ -1,6 +1,6 @@
 dreg: dreg.c dreg.h charset.h charset.c
 	cc -Os -Wall -ansi -fPIC -pedantic -o libcharset.so -shared charset.c
-	cc -Os -Wall -ansi -fPIC -pedantic -o libdreg.so -shared dreg.c
+	cc -Os -Wall -ansi -fPIC -pedantic -o libdreg.so -shared dreg.c charset.c
 
 install:
 	cp libcharset.so /usr/lib
