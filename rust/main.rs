@@ -37,7 +37,7 @@ fn main() {
 			+"[defaults to stdin]", "input file")
 		,optflag("g", "grep", "search for a match")
 		,optopt("o", "output", "file in which to store captures"
-			"[defaults to stdout]", "output file")
+			+"[defaults to stdout]", "output file")
 	];
 	let matches = match getopts(args.tail(), opts) {
 		Ok(m) => { m }
