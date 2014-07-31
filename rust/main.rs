@@ -4,22 +4,15 @@ use getopts::{
 		 optopt
 		,optflag
 		,getopts
+		,usage
+		,short_usage
 		,OptGroup};
 use std::os;
-use std::io;
-
-macro_rules! missing( (errmsg: expr, flag: expr) => (
-	{ short_usage(program.as_slice(), opts);
-	fail!("Error: " + errmsg + " not found, but expected.") }
-))
-
-macro_rules! check( (val:expr, typ:ty | error: block) => (
-	match val {
-		typ(v) => { v },
-		None => error
-	}
-))
-
+use std::str;
+use std::io::{
+		 File
+		,stdio
+		,BufferedReader};
 
 fn print_usage() {} //FIXME
 
@@ -48,27 +41,36 @@ fn main() {
 		return;
 	};
 	let mut input = if matches.opt_present("f") {
-		let filename = check!(matches.opt_str("f"), String |
-			missing!("input file"));
+		let filename = match matches.opt_str("f") {
+			Some(s) => { s }
+			None => { //TODO: make me a macro!
+				short_usage(program.as_slice(), opts);
+				fail!("Error: no input file provided, but expected.")
+			}
+		};
 		let path = Path::new(filename);
 		let file = File::open(&path);
 		BufferedReader::new(file)
 	} else if matches.opt_present("s") {
-		let string = check!(matches.opt_str("s"), String |
-			missing!("input string"));
+		let string = match matches.opt_str("s") {
+			Some(s) => { s }
+			None => {
+				short_usage(program.as_slice(), opts);
+				fail!("Error: no input string provided, but expected.")
+			}
+		};
 		fail!("Error: string matching not implemented.")
 	} else {
-		io.stdin()
+		stdio::stdin()
 	};
 	let mut output = if matches.opt_present("o") {
-		let outname = check!(matches.opt_str("o"), String |
-			missing!("output file"));
+		//FIXME
 		fail!("Error: output files not implemented.")
 	} else {
-		io.stdout()
+		stdio::stdout()
 	};
 	let regex = storeg(match matches.free[0] {
-		String(s) => { s }
+		Some(s) => { s }
 		None => {
 			short_usage(program.as_slice(), opts);
 			fail!("Error: no regex provided, but required.")
