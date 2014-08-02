@@ -1,4 +1,6 @@
 
 
 
-fn storeg() {} //FIXME
+fn storeg(s &str) -> Regex {
+
+} //FIXME
