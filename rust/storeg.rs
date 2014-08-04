@@ -8,7 +8,6 @@ enum StoregState {
 	CHAR(Regex)
 };
 
-//this would normally be done recursively but Rust doesn't handle recursion
 fn storeg(s &str, r Result<Regex>) -> Result<Regex> {
 	let (fc, nx) s.slice_shift_char();
 	let reg = match r {
