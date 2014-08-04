@@ -1,13 +1,4 @@
 
-enum StoregState {
-	OR(Regex),
-	AND(Regex),
-	KLEENE(Regex),
-	END_OR(Regex),
-	END_AND(Regex),
-	CHAR(Regex)
-};
-
 fn storeg(s &str, r Result<Regex>) -> Result<Regex> {
 	let (fc, nx) s.slice_shift_char();
 	let reg = match r {
