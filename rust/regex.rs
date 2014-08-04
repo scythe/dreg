@@ -6,3 +6,9 @@ enum Regex {
 	Concat(&[Regex]),
 	Chars(&[Charset])
 }
+
+impl Regex {
+	fn find_scope(pt Regex) -> Regex {
+		//FIXME
+	}
+}
