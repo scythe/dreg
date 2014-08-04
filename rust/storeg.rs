@@ -26,6 +26,7 @@ fn storeg(s &str, r Result<Regex>) -> Result<Regex> {
 	'*'	=> storeg(nx, kleene_of(reg))
 	'+'	=> storeg(nx, concat_of(kleene_of(reg), kleene_p(reg)))
 	'?'	=> storeg(nx, maybe_of(reg))
+	'!'	=> storeg(nx, strict_of(reg))
 	'|'	=> stoor(nx, reg)
 	'&'	=> stoand(nx, reg)
 	'('	=> regconcat(reg, stoscope(nx, reg))
