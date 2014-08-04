@@ -7,12 +7,11 @@ fn storeg(s &str, r Result<Regex>) -> Result<Regex> {
 	};
 	let ch = match fc {
 		Some(c)	=> c
-		None ()	=> {return Ok(reg);}
+		None()	=> {return Ok(reg);}
 	};
 	match ch {
 	'['	=> stoclass(nx, reg)
 	'.'	=> storeg(nx, concat_of(reg, ANY_CHARACTER))
-	'%'	=> stostdclass(nx, reg)
 	'*'	=> storeg(nx, kleene_of(reg))
 	'+'	=> storeg(nx, concat_of(kleene_of(reg), kleene_p(reg)))
 	'?'	=> storeg(nx, maybe_of(reg))
@@ -31,7 +30,7 @@ fn storeg(s &str, r Result<Regex>) -> Result<Regex> {
 		}
 	'{'	=> {
 			let (nstr, reps) = splitn(nx, '}', 1);
-			storeg(nstr, nrep_from(reg, _read_ints(reps)))
+			storeg(nstr, nrep_of(reg, _read_ints(reps)))
 		}
 	'\\'	=> {
 			let (nstr, nc) = nx.slice_shift_char();
