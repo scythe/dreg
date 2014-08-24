@@ -6,7 +6,7 @@ enum Regex {
 	And(Box<Reglist>),
 	Concat(Box<Reglist>),
 	Kleene(Box<Regex>),
-	Chars(Box<Reglist>)
+	Chars(Charset)
 }
 
 struct Reglist {

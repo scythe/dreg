@@ -1,5 +1,5 @@
 
-fn storeg(s &str, r Result<Regex>) -> Result<Regex> {
+fn storeg(s: &str, r: Result<Regex>) -> Result<Regex> {
 	let (fc, nx) s.slice_shift_char();
 	let reg = match r {
 		Ok(regex)	=> { regex }
